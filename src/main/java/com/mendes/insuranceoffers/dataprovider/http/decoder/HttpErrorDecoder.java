@@ -16,7 +16,7 @@ public class HttpErrorDecoder implements ErrorDecoder{
 	private final ErrorDecoder defaultErrorDecoder = new Default();
 	
 	@Value("#{'${mendes.feign.client.config.http-status-codes:}'.split(',')}")
-	private List<Integer> listaHttpStatusCode;
+	private List<Integer> httpStatusCodeList;
 	
 	@Value("${mendes.feign.client.config.retry.server.error:false}")
 	private boolean retryServerError;
@@ -34,18 +34,18 @@ public class HttpErrorDecoder implements ErrorDecoder{
 		
 		if((httpStatus.is5xxServerError() && retryServerError) || (httpStatus.is4xxClientError() && retryClientError)) {
 			return new RetryableException(response.status(),
-					"Não foi possível realizar o consumo do serviço.",
+					"Unable to consume service.",
 					response.request().httpMethod(),
 					exception,
 					null,
 					response.request());
 		}
 		
-		boolean retryHttpStatusCode = listaHttpStatusCode.stream()
-				.anyMatch(httpStatusCode -> httpStatuscode.equals(response.status()));
+		boolean retryHttpStatusCode = httpStatusCodeList.stream()
+				.anyMatch(httpStatusCode -> httpStatusCode.equals(response.status()));
 		
 		if(retryHttpStatusCode) {
-			return new RetryableException(response.status(), "Não foi possível realizar o consumo de serviço.",
+			return new RetryableException(response.status(), "Unable to consume service.",
 					response.request().httpMethod(), exception, null, response.request());
 		}
 		return exception;

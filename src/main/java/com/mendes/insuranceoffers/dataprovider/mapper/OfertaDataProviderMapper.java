@@ -11,18 +11,7 @@ import com.mendes.ofertas.dataprovider.model.response.ProcedureBuscarOfertasDisp
 @Mapper(componentModel = "spring", nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)
 public abstract class OfertaDataProviderMapper {
 	
-	@Value("${spring.datasource.username}")
-	private String nomeUsuario;
-	
-	@Mapping(target = "produto.codigoProduto", source = "codigoProdutoSeguro")
-	@Mapping(target = "produto.codigoRamo", source = "codigoProdutoSeguro")
-	@Mapping(target = "produto.codigoPlano", source = "codigoProdutoSeguro")
-	@Mapping(target = "riscoSegurado.codigoTipoConvenioPrestamista", source = "codigoProdutoSeguro")
-	@Mapping(target = "produto.nomeProduto", source = "codigoProdutoSeguro")
-	@Mapping(target = "produto.numeroProcessoSusep", source = "codigoProdutoSeguro")
-	@Mapping(target = "produto.indicadorPiloto", source = "codigoProdutoSeguro")
-	public abstract OfertaDomain toDomain(ProcedureBuscarOfertasDisponiveisResponse procedureBuscarOfertasDisponiveisResponse);
-	
+
 	@Mapping(target = "codigoIdentificacaoCanalSeguroPrestamista", source = "codigoProdutoSeguro")
 	@Mapping(target = "tipoSegmentoBanco", source = "codigoProdutoSeguro")
 	@Mapping(target = "codigoParceiro", source = "codigoProdutoSeguro")

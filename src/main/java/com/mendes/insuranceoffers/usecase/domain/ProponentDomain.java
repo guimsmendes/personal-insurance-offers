@@ -7,17 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ProponentDomain {
-	
+	private String name;
 	private LocalDate birthDate;
-	private AccountDomain account;
-	
-	@Getter
-	@Setter
-	public static class AccountDomain{
-		private int bankId;
-		private int agencyId;
-		private int accountId;
-		private String accountVerificationDigit;
-	}
-
 }

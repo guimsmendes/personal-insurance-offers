@@ -2,7 +2,7 @@ package com.mendes.insuranceoffers.dataprovider.http;
 
 import org.springframework.http.ResponseEntity;
 
-import com.mendes.ofertas.dataprovider.http.model.response.DataHttpResponse;
+import com.mendes.insuranceoffers.dataprovider.http.model.response.DataHttpResponse;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 

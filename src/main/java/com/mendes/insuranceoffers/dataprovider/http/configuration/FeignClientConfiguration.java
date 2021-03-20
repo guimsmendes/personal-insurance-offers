@@ -15,9 +15,9 @@ public class FeignClientConfiguration {
 	
 	
 	@Value("1000")
-	private long intervaloTentativas;
+	private long retriesInterval;
 	@Value("3")
-	private int numeroMaximoTentativas;
+	private int maxRetries;
 	
 	@Bean
 	@ConditionalOnMissingBean
@@ -28,7 +28,7 @@ public class FeignClientConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public Retryer feignRetryer() {
-		return new Retryer.Default(intervaloTentativas, SECONDS.toMillis(1), numeroMaximoTentativas);
+		return new Retryer.Default(retriesInterval, SECONDS.toMillis(1), maxRetries);
 	}
 
 }

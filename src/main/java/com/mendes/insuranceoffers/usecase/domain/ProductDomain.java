@@ -11,7 +11,6 @@ public class ProductDomain {
 	
 	private int productId;
 	private int branchId;
-	private int planId;
 	private String productName;
 	private List<CoverDomain> covers;
 	
@@ -20,7 +19,7 @@ public class ProductDomain {
 	public static class CoverDomain {
 		private String coverId;
 		private String coverName;
-		List<CoverSummaryDomain> coverSummary;
+		List<CoverSummaryDomain> coverSummaries;
 		
 		@Getter
 		@Setter

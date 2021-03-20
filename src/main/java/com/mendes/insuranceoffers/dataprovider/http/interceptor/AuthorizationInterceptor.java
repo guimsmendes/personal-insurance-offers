@@ -8,9 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
-import com.mendes.ofertas.entrypoint.listener.GestaoOfertaListener;
-
-import com.mendes.ofertas.dataprovider.http.constant.*;
+import com.mendes.insuranceoffers.dataprovider.http.constant.HeaderConstant;
+import com.mendes.insuranceoffers.dataprovider.http.constant.HeaderConstant.*;
 
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
@@ -30,17 +29,17 @@ public class AuthorizationInterceptor implements RequestInterceptor {
 
 	@Override
 	public void apply(RequestTemplate template) {
-		template.header(X_APIKEY, clientId);
-		template.header(X_FLOW_ID, X_FLOW_ID_VALUE);
-		template.header(X_CORRELATION_ID, UUID.randomUUID().toString());
+		template.header(HeaderConstant.X_APIKEY, clientId);
+		template.header(HeaderConstant.X_FLOW_ID, X_FLOW_ID_VALUE);
+		template.header(HeaderConstant.X_CORRELATION_ID, UUID.randomUUID().toString());
 		
 		try {
 			JSONObject token = TOKEN_GENERATOR.getValidAuthorizationToken(cliendId);
 			String accessToken = token.getString("access_token");
-			template.header(AUTHORIZATION, accessToken);
+			template.header(HeaderConstant.AUTHORIZATION, accessToken);
 		}
 		catch (AuthenticationException e) {
-			LOG.error("Mensagem da exception: {}. StackTrace: {}", e.getMessage(), e.getStackTrace());
+			Log.error("Exception message {}. StackTrace: {}", e.getMessage(), e.getStackTrace());
 		}
 		
 	}

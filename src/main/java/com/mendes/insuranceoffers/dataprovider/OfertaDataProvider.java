@@ -1,30 +1,36 @@
 package com.mendes.insuranceoffers.dataprovider;
 
-import com.mendes.insuranceOffers.usecase.gateway.OfferGateway;
+import java.util.List;
+import java.util.Optional;
+
+import com.mendes.insuranceoffers.dataprovider.model.Offer;
+import com.mendes.insuranceoffers.dataprovider.repository.OfferRepository;
+import com.mendes.insuranceoffers.entrypoint.mapper.OfferManagementListenerMapper;
+import com.mendes.insuranceoffers.entrypoint.model.request.OfferManagementListenerRequest;
+import com.mendes.insuranceoffers.usecase.domain.OfferDomain;
+import com.mendes.insuranceoffers.usecase.gateway.OfferGateway;
 
 public class OfertaDataProvider implements OfferGateway{
 	
-	private OfertaRepository ofertaRepository;
+	private OfferRepository offerRepository;
 	
-	private OfertaDataProviderMapper ofertaDataProviderMapper;
-	
-	private GestaoOfertaListenerMapper gestaoOfertaListenerMapper;
+	private OfferManagementListenerMapper offerManagementListenerMapper;
 	
 	
 	@Override
-	public Optional<List<OfertaDomain>> buscarOfertasDisponiveis(GestaoOfertaListenerRequest ofertaListenerRequest){
-		OfertaDomain ofertaDomain = gestaoOfertaListenerMapper.toOfertaDomain(ofertaListenerRequest);
-		return ofertaRepository.buscarOfertasDisponiveis(ofertaDataProviderMapper.toProcedureRequest(ofertaListenerRequest))
-				.map(ofertasDisponiveis -> agregarDados(ofertasDisponiveis, ofertaDomain));
+	public Optional<List<OfferDomain>> searchAvailableOffers(OfferManagementListenerRequest offerListenerRequest) {
+		OfferDomain offerDomain = offerManagementListenerMapper.toOfferDomain(offerListenerRequest);
+		return offerRepository.searchAvailableOffers(offerDomain.getInsuredRisk())
+				.map(availableOffers -> addData(availableOffers, offerDomain));
 	}
-	
+
 	@Override
-	public Optional<OfertaDomain> precificar(OfertaDomain ofertaDomain){
-		return ofertaRepository.buscarPrecificacao(ofertaDataProviderMapper.toProcedurePrecificacaoRequest(ofertaDomain))
-				.map(procedurePrecificacaoResponse -> ofertaDataProviderMapper.toDomain(procedurePrecificacaoResponse));
+	public Optional<OfferDomain> price(OfferDomain offerDomain) {
+		return offerRepository.searchPricing(offerDomain.getProduct().getProductId(), offerDomain.getProduct().getBranchId())
+				.map(procedurePricingResponse -> ofertaDataProviderMapper.toDomain(procedurePricingResponse));
 	}
 	
-	private List<OfertaDomain> agregarDados(List<ProcedureBuscarOfertasDisponiveisResponse> ofertaDisponiveis, OfertaDomain ofertaDomain) {
+	private List<OfertaDomain> addData(List<ProcedureBuscarOfertasDisponiveisResponse> ofertaDisponiveis, OfertaDomain ofertaDomain) {
 		List<OfertaDomain> ofertasDisponiveisDomain = ofertaDataProviderMapper.toListaOfertaDomain(ofertasDisponíveis);
 		return ofertasDisponiveisDomain
 				.stream()
@@ -37,5 +43,12 @@ public class OfertaDataProvider implements OfferGateway{
 				})
 				.collect(Collectors.toList());
 	}
+
+	@Override
+	public void persistOffer(Offer offer) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }

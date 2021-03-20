@@ -1,11 +1,13 @@
 package com.mendes.insuranceoffers.usecase;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.mendes.insuranceoffers.dataprovider.model.Offer;
 import com.mendes.insuranceoffers.entrypoint.model.request.OfferManagementListenerRequest;
 import com.mendes.insuranceoffers.usecase.domain.OfferDomain;
 import com.mendes.insuranceoffers.usecase.domain.ProductDomain;
@@ -25,27 +27,19 @@ public class OfferUseCase {
 	}
 
 	public List<OfferDomain> generateOffers(OfferManagementListenerRequest offerListenerRequest) {
+
 		return offerGateway.searchAvailableOffers(offerListenerRequest).map(this::searchForProductCovers)
 				.map(this::addPricing)
-				.map(offerDomains -> setPersonalLoanTotalValue(offerDomains, offerListenerRequest.getPersonalLoanTotalValue()))
-				.map(offerDomains -> setPersonalLoanMonthlyPaymentValue(offerDomains,
-						offerListenerRequest.getPersonalLoanMonthlyPaymentValue()))
+				.map(offerDomains -> setPersonalLoanTotalValue(offerDomains,
+						offerListenerRequest.getPersonalLoanTotalValue()))
 				.orElseThrow(() -> new UseCaseException.OfferNotFound(
-						"There are no Insurance Offers for the Personal Loan Product code: "
-								+ offerListenerRequest.getPersonalLoanProductCode() + "."));
+						"There are no Insurance Offers for the Personal Loan Product code: "));
 	}
 
-	private List<OfferDomain> setPersonalLoanTotalValue(List<OfferDomain> offerDomains, BigDecimal personalLoanTotalValue) {
+	private List<OfferDomain> setPersonalLoanTotalValue(List<OfferDomain> offerDomains,
+			BigDecimal personalLoanTotalValue) {
 		return offerDomains.stream().map(offerDomain -> {
 			offerDomain.setPersonalLoanTotalValue(personalLoanTotalValue);
-			return offerDomain;
-		}).collect(Collectors.toList());
-	}
-
-	private List<OfferDomain> setPersonalLoanMonthlyPaymentValue(List<OfferDomain> offerDomains,
-			BigDecimal personalLoanMonthlyPaymentValue) {
-		return offerDomains.stream().map(offerDomain -> {
-			offerDomain.setPersonalLoanMonthlyPaymentValue(personalLoanMonthlyPaymentValue);
 			return offerDomain;
 		}).collect(Collectors.toList());
 	}
@@ -67,13 +61,30 @@ public class OfferUseCase {
 	private OfferDomain addPricingValues(OfferDomain availableOffer) {
 		OfferDomain pricedOffer = offerGateway.price(availableOffer).<UseCaseException.UnableToPriceOffer>orElseThrow(
 				() -> new UseCaseException.UnableToPriceOffer("Unable to price this Insurance Offer"));
-		availableOffer.setInsuranceOfferCode(pricedOffer.getInsuranceOfferCode());
+		availableOffer.setInsuranceOfferId(pricedOffer.getInsuranceOfferId());
 		availableOffer.setMonthlyPaymentValue(pricedOffer.getMonthlyPaymentValue());
 		availableOffer.setTotalPaymentValue(pricedOffer.getTotalPaymentValue());
 		availableOffer.setInterestRate(pricedOffer.getInterestRate());
 		availableOffer.setInterestRateValue(pricedOffer.getInterestRateValue());
 		availableOffer.setPaymentsNumber(pricedOffer.getPaymentsNumber());
+		persistOffer(availableOffer);
 		return availableOffer;
+	}
+
+	private void persistOffer(OfferDomain availableOffer) {
+		offerGateway.persistOffer(Offer.builder().personalLoanOfferId(availableOffer.getPersonalLoanOfferId())
+				.insuranceOfferId(availableOffer.getInsuranceOfferId()).name(availableOffer.getProponent().getName())
+				.birthDate(availableOffer.getProponent().getBirthDate())
+				.monthlyPaymentValue(availableOffer.getMonthlyPaymentValue())
+				.totalPaymentValue(availableOffer.getTotalPaymentValue())
+				.paymentsNumber(availableOffer.getPaymentsNumber())
+				.validityStartDate(availableOffer.getValidityStartDate()).interestRate(availableOffer.getInterestRate())
+				.interestRateValue(availableOffer.getInterestRateValue())
+				.personalLoanTotalValue(availableOffer.getPersonalLoanTotalValue())
+				.productId(availableOffer.getProduct().getProductId())
+				.branchId(availableOffer.getProduct().getBranchId())
+				.productName(availableOffer.getProduct().getProductName()).offerDate(LocalDate.now()).build());
+
 	}
 
 }

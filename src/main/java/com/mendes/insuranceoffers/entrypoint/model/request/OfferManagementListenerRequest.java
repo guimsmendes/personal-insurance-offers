@@ -19,31 +19,35 @@ import lombok.Setter;
 @AllArgsConstructor
 public class OfferManagementListenerRequest {
 	
-	@NotBlank
-	private String personalLoanOfferId;
-	
 	@NotNull
-	private UUID requisitionIntentionCode;
-	
+	@NotBlank
+	private String name;
+	@NotNull
+	@NotBlank
+	private LocalDate birthDate;
+	@NotNull
 	@NotBlank
 	private String creditScore;
-	
 	@NotNull
 	@Positive
 	private BigDecimal personalLoanTotalValue;
-	private BigDecimal personalLoanMonthlyPaymentValue;
+	@NotNull
+	@NotBlank
 	private LocalDate firstPaymentPersonalLoanDueDate;
+	@NotNull
+	@Positive
 	private int paymentsNumber;
-	private int personalLoanProductCode;
-	private LocalDate birthDate;
-	private int agencyId;
-	private int accountId;
-	private int accountVerificationDigit;
-	private String clientId;
+
+
+	private UUID personalLoanOfferId;
 	private int proponentsAge;
 	
 	private void setProponentsAge() {
 		this.proponentsAge = this.birthDate == null ? 0 : Period.between(birthDate, LocalDate.now()).getYears();
+	}
+	
+	private void setPersonalLoanOfferId() {
+		this.personalLoanOfferId = UUID.randomUUID();
 	}
 	
 	

@@ -1,8 +1,8 @@
 package com.mendes.insuranceoffers.dataprovider.http.enums;
 
-public enum CatalogoProdutosExpand {
+public enum ProductsCatalogExpand {
 	
-	RESUMO,
-	COBERTURAS
+	SUMMARY,
+	COVERS
 
 }

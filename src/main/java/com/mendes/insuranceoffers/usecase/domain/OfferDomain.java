@@ -11,8 +11,8 @@ import lombok.Setter;
 @Setter
 public class OfferDomain {
 	
-	private UUID requisitionIntentionCode;
-	private UUID insuranceOfferCode;
+	private UUID personalLoanOfferId;
+	private UUID insuranceOfferId;
 	private BigDecimal monthlyPaymentValue;
 	private BigDecimal totalPaymentValue;
 	private int paymentsNumber;
@@ -24,17 +24,17 @@ public class OfferDomain {
 	private InsuredRiskDomain insuredRisk;
 	private ProponentDomain proponent;
 	private ProductDomain product;
+	private LocalDate firstPaymentPersonalLoanDueDate;
 	
 	@Getter
 	@Setter
 	public static class InsuredRiskDomain {
 		
-		private String personalLoanOfferId;
 		private BigDecimal creditValue;
-		private int paymentsNumber;
 		private String creditScore;
 		private int clientAge;
-		private LocalDate firstPaymentPersonalLoanDueDate;
 	}
+	
+	
 
 }
